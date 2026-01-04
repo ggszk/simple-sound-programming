@@ -26,7 +26,7 @@ class WaveFileIO:
         if config is None:
             config = AudioConfig()
             
-        sample_rate, audio_data = wavfile.read(filename)
+        file_sample_rate, audio_data = wavfile.read(filename)
         
         # データ型を浮動小数点に変換
         audio_data = audio_data.astype(np.float64)
@@ -34,23 +34,27 @@ class WaveFileIO:
         # 16bitの場合の正規化 (-1.0 to 1.0)
         if audio_data.dtype == np.int16 or np.max(np.abs(audio_data)) > 1.0:
             audio_data = audio_data / 32768.0
-            
-        return sample_rate, audio_data
+
+        # configのサンプリング周波数を更新
+        updated_config = AudioConfig(
+            sample_rate=file_sample_rate
+        )
+    
+        return updated_config, audio_data
     
     @staticmethod
-    def save_mono(filename, sample_rate, audio_data, config=None):
+    def save_mono(filename, audio_data, config=None):
         """
         モノラル音声データをWAVファイルに保存
         
         Args:
             filename (str): 保存ファイル名
-            sample_rate (int): サンプリング周波数
             audio_data (np.ndarray): 音声データ (-1.0 to 1.0)
             config (AudioConfig): オーディオ設定
         """
         if config is None:
             config = AudioConfig()
-        
+                
         # クリッピング防止
         audio_data = np.clip(audio_data, -config.max_amplitude, config.max_amplitude)
         
@@ -58,7 +62,7 @@ class WaveFileIO:
         audio_data_16bit = (audio_data * 32767).astype(np.int16)
         
         # ファイルに保存
-        wavfile.write(filename, sample_rate, audio_data_16bit)
+        wavfile.write(filename, config.sample_rate, audio_data_16bit)
     
     @staticmethod
     def load_stereo(filename, config=None):
@@ -75,7 +79,7 @@ class WaveFileIO:
         if config is None:
             config = AudioConfig()
             
-        sample_rate, audio_data = wavfile.read(filename)
+        file_sample_rate, audio_data = wavfile.read(filename)
         
         # データ型を浮動小数点に変換
         audio_data = audio_data.astype(np.float64)
@@ -83,17 +87,21 @@ class WaveFileIO:
         # 16bitの場合の正規化
         if np.max(np.abs(audio_data)) > 1.0:
             audio_data = audio_data / 32768.0
-            
-        return sample_rate, audio_data
+
+        # configのサンプリング周波数を更新
+        updated_config = AudioConfig(
+            sample_rate=file_sample_rate
+        )
+    
+        return updated_config, audio_data
     
     @staticmethod
-    def save_stereo(filename, sample_rate, audio_data, config=None):
+    def save_stereo(filename, audio_data, config=None):
         """
         ステレオ音声データをWAVファイルに保存
         
         Args:
             filename (str): 保存ファイル名
-            sample_rate (int): サンプリング周波数
             audio_data (np.ndarray): 音声データ [N x 2] (-1.0 to 1.0)
             config (AudioConfig): オーディオ設定
         """
@@ -107,13 +115,13 @@ class WaveFileIO:
         audio_data_16bit = (audio_data * 32767).astype(np.int16)
         
         # ファイルに保存
-        wavfile.write(filename, sample_rate, audio_data_16bit)
+        wavfile.write(filename, config.sample_rate, audio_data_16bit)
 
 
 # 便利な関数エイリアス（後方互換性のため）
-def save_wav(filename, sample_rate, audio_data, config=None):
+def save_wav(filename, audio_data, config=None):
     """簡単なWAVファイル保存関数"""
-    WaveFileIO.save_mono(filename, sample_rate, audio_data, config)
+    WaveFileIO.save_mono(filename, audio_data, config)
 
 def read_wav(filename, config=None):
     """簡単なWAVファイル読み込み関数"""
