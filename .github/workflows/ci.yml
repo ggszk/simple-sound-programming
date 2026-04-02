@@ -24,11 +24,9 @@ jobs:
     - name: Install dependencies
       run: uv sync --group dev
 
-    - name: Lint with flake8
+    - name: Lint with ruff
       timeout-minutes: 5
-      run: |
-        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        uv run flake8 . --count --exit-zero --select=F401,F841,C901,E501 --statistics
+      run: uv run ruff check .
 
     - name: Test with pytest
       timeout-minutes: 10

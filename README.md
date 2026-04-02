@@ -538,8 +538,8 @@ uv sync --group dev
 uv run pytest
 
 # コード品質チェック
-uv run black .
-uv run flake8 audio_lib/
+uv run ruff check .
+uv run ruff format .
 ```
 
 ## 📄 ライセンス

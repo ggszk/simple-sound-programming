@@ -20,10 +20,9 @@ jobs:
     - name: Install dependencies
       run: uv sync --group dev
 
-    - name: Lint with flake8 (critical errors only)
+    - name: Lint with ruff (critical errors only)
       timeout-minutes: 2
-      run: |
-        uv run flake8 audio_lib/ --count --select=E9,F63,F7,F82 --show-source --statistics --max-line-length=127
+      run: uv run ruff check audio_lib/
 
     - name: Quick test
       timeout-minutes: 5

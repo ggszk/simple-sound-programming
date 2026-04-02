@@ -27,35 +27,27 @@ Repository = "https://github.com/ggszk/simple-audio-programming.git"
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
-    "flake8>=5.0.0",
-    "black>=22.0.0",
-    "isort>=5.10.0",
+    "ruff>=0.4.0",
     "mypy>=1.0.0",
 ]
 
-[tool.black]
-line-length = 88
-target-version = ['py38']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+[tool.ruff]
+line-length = 127
+target-version = "py38"
+exclude = [".venv", "build", "dist"]
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
-known_first_party = ["audio_lib"]
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90"]
+ignore = ["W291", "W293", "E402", "E231"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.mypy]
 python_version = "3.8"
