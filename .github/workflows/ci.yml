@@ -3,10 +3,6 @@ name: CI
 # 一時的に無効化（軽量版を使用中）
 on:
   workflow_dispatch:  # 手動実行のみ
-  # push:
-  #   branches: [ main, develop ]
-  # pull_request:
-  #   branches: [ main ]
 
 jobs:
   test:
@@ -14,63 +10,34 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]  # 主要バージョンのみでテスト時間短縮
+        python-version: ["3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Load cached Poetry installation
-      id: cached-poetry
-      uses: actions/cache@v3
-      with:
-        path: ~/.local
-        key: poetry-${{ runner.os }}
-    
-    - name: Install Poetry
-      if: steps.cached-poetry.outputs.cache-hit != 'true'
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.8.3
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: true
-    
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v3
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-    
+      run: uv python install ${{ matrix.python-version }}
+
     - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      timeout-minutes: 10
-      run: |
-        poetry config virtualenvs.create true
-        poetry config virtualenvs.in-project true
-        poetry install --with dev --no-interaction
-    
+      run: uv sync --group dev
+
     - name: Lint with flake8
       timeout-minutes: 5
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Check for unused imports and other important issues (allow to continue with warnings)
-        poetry run flake8 . --count --exit-zero --select=F401,F841,C901,E501 --statistics
-    
+        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        uv run flake8 . --count --exit-zero --select=F401,F841,C901,E501 --statistics
+
     - name: Test with pytest
       timeout-minutes: 10
       run: |
-        poetry run pytest tests/ --cov=audio_lib --cov-report=xml -v
-    
+        uv run pytest tests/ --cov=audio_lib --cov-report=xml -v
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
-      if: matrix.python-version == '3.11'  # 一つのバージョンのみでカバレッジ報告
+      if: matrix.python-version == '3.11'
       with:
         file: ./coverage.xml
         flags: unittests

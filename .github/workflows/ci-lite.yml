@@ -10,29 +10,22 @@ jobs:
   quick-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-    
-    - name: Install dependencies with pip (faster)
-      timeout-minutes: 5
-      run: |
-        python -m pip install --upgrade pip
-        pip install numpy scipy matplotlib pytest flake8
-        pip install -e .
-    
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+
+    - name: Install dependencies
+      run: uv sync --group dev
+
     - name: Lint with flake8 (critical errors only)
       timeout-minutes: 2
       run: |
-        flake8 audio_lib/ --count --select=E9,F63,F7,F82 --show-source --statistics --max-line-length=127
-    
+        uv run flake8 audio_lib/ --count --select=E9,F63,F7,F82 --show-source --statistics --max-line-length=127
+
     - name: Quick test
       timeout-minutes: 5
       run: |
-        python -m pytest tests/test_oscillators.py -v
-        python run_tests.py quick
+        uv run pytest tests/test_oscillators.py -v

@@ -11,35 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: latest
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    
+      run: uv python install ${{ matrix.python-version }}
+
     - name: Install dependencies
-      run: poetry install
-    
+      run: uv sync --group dev
+
     - name: Test imports
       run: |
-        poetry run python -c "from audio_lib.core.audio_config import AudioConfig; print('✓ Core imports work')"
-        poetry run python -c "from audio_lib.synthesis.oscillators import SineWave; print('✓ Synthesis imports work')"
-        poetry run python -c "from audio_lib.instruments.basic_instruments import Piano; print('✓ Instruments imports work')"
-    
+        uv run python -c "from audio_lib.core.audio_config import AudioConfig; print('✓ Core imports work')"
+        uv run python -c "from audio_lib.synthesis.oscillators import SineWave; print('✓ Synthesis imports work')"
+        uv run python -c "from audio_lib.instruments.basic_instruments import Piano; print('✓ Instruments imports work')"
+
     - name: Test basic functionality
       run: |
-        poetry run python -c "
+        uv run python -c "
         from audio_lib.core.audio_config import AudioConfig
         from audio_lib.synthesis.oscillators import SineWave
         config = AudioConfig()

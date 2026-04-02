@@ -44,10 +44,8 @@
 ```
 simple-audio-programming/    # プロジェクト全体
 ├── README.md                    # このファイル
-├── pyproject.toml              # Poetry設定ファイル（依存関係・プロジェクト設定）
-├── poetry.lock                 # 依存関係ロックファイル（バージョン固定）
-├── pytest.ini                 # pytest設定
-├── run_tests.py               # テスト実行スクリプト
+├── pyproject.toml              # プロジェクト設定（依存関係・ツール設定）
+├── uv.lock                     # 依存関係ロックファイル（バージョン固定）
 ├── audio_lib/                   # メインライブラリ
 │   ├── __init__.py             # メインモジュール
 │   ├── core/                   # 基本機能
@@ -74,6 +72,10 @@ simple-audio-programming/    # プロジェクト全体
 │   ├── lesson_01_basics_and_sine_waves.ipynb
 │   ├── lesson_02_envelopes_and_adsr.ipynb
 │   └── ...                     # その他のレッスン
+├── docs/                       # ドキュメント
+│   ├── CONTRIBUTING.md         # 貢献ガイドライン
+│   ├── CHANGELOG.md            # 変更履歴
+│   └── ...                     # その他のドキュメント
 └── tests/                      # テストコード
     ├── test_oscillators.py     # 基本機能テスト
     └── ...                     # その他のテスト
@@ -81,48 +83,11 @@ simple-audio-programming/    # プロジェクト全体
 
 ## 🎯 依存関係管理
 
-このプロジェクトは **Poetry** を使用して依存関係を管理しています：
+このプロジェクトは **uv** を使用して依存関係を管理しています：
 
-### Poetry の利点
-- **依存関係の自動解決**: 互換性のあるバージョンを自動選択
-- **ロックファイル**: 再現可能な環境の保証（`poetry.lock`）
-- **仮想環境の自動管理**: 分離された開発環境
-- **プロジェクト設定の一元化**: `pyproject.toml`で全設定を管理
-- **パッケージ公開**: PyPIへの簡単な公開
-
-### 教育的メリット
-- **環境の統一**: 全ての学習者が同じ環境で実行可能
-- **依存関係の透明性**: 必要なパッケージが明確
-- **再現可能性**: `poetry.lock`により同一環境の再現
-- **モダンな開発手法**: 現代的なPython開発を体験
-
-### pyproject.toml の例
-```toml
-[tool.poetry]
-name = "simple-audio-programming"
-version = "0.1.0"
-description = "シンプル音響プログラミング教育ライブラリ"
-authors = ["Your Name <your.email@example.com>"]
-license = "MIT"
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.21.0"
-scipy = "^1.7.0"
-matplotlib = "^3.5.0"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0.0"
-pytest-cov = "^4.0.0"
-black = "^22.0.0"
-flake8 = "^4.0.0"
-jupyter = "^1.0.0"
-jupyterlab = "^3.4.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+```bash
+# 仮想環境の作成と依存関係のインストール
+uv sync --group dev
 ```
 
 ## 主な機能
@@ -555,51 +520,23 @@ jupyter lab
 
 ## 🧪 テスト実行
 
-### 🚀 簡単なテスト実行（推奨）
-
-```bash
-# 全テスト実行（51件のテスト）
-poetry run python run_tests.py
-
-# 包括的機能テスト
-poetry run python run_tests.py comprehensive
-
-# ノートブック関連テスト
-poetry run python run_tests.py notebook
-
-# 特定のレッスンテスト
-poetry run python run_tests.py lesson1
-poetry run python run_tests.py lesson2
-
-# クイックテスト（最小限）
-poetry run python run_tests.py quick
-
-# 簡潔な出力
-poetry run python run_tests.py --quiet
-```
-
-### 🔧 直接pytestでのテスト実行
-
 ```bash
 # 全テストの実行
-poetry run pytest
+uv run pytest
 
 # 詳細出力
-poetry run pytest -v -s
+uv run pytest -v -s
 
 # カバレッジ付きテスト
-poetry run pytest --cov=audio_lib
+uv run pytest --cov=audio_lib
 
 # 特定のテストファイルのみ
-poetry run pytest tests/test_oscillators.py -v
-
-# 特定のテストクラス
-poetry run pytest tests/test_notebook_scenarios.py::TestLesson01BasicsAndSineWaves -v
+uv run pytest tests/test_oscillators.py -v
 ```
 
 ## 🤝 貢献
 
-プロジェクトへの貢献を歓迎します！詳細は [CONTRIBUTING.md](CONTRIBUTING.md) をご覧ください。
+プロジェクトへの貢献を歓迎します！詳細は [CONTRIBUTING.md](docs/CONTRIBUTING.md) をご覧ください。
 
 ### 開発環境のセットアップ
 
@@ -608,23 +545,18 @@ poetry run pytest tests/test_notebook_scenarios.py::TestLesson01BasicsAndSineWav
 git clone https://github.com/ggszk/simple-audio-programming.git
 cd simple-audio-programming
 
-# Poetryがインストールされていない場合
-curl -sSL https://install.python-poetry.org | python3 -
+# uvがインストールされていない場合
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 仮想環境の作成と依存関係のインストール
-poetry install --with dev
-
-# 仮想環境をアクティベート
-# 推奨方法（Poetry 2.x系対応）:
-poetry run jupyter lab  # 直接起動（推奨）
-# または: poetry env activate && jupyter lab
+uv sync --group dev
 
 # テストの実行
-poetry run python run_tests.py
+uv run pytest
 
 # コード品質チェック
-poetry run black .
-poetry run flake8 audio_lib/
+uv run black .
+uv run flake8 audio_lib/
 ```
 
 ## 📄 ライセンス
