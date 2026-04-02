@@ -161,12 +161,12 @@ sequencer.render("my_song.wav")
 
 ```bash
 # 全機能をテスト（推奨）
-poetry run python examples/debug_all.py
+uv run python examples/debug_all.py
 
 # 個別機能のテスト
-poetry run python examples/debug_oscillators.py  # オシレーターテスト
-poetry run python examples/debug_envelopes.py    # エンベロープテスト
-poetry run python examples/debug_instruments.py  # 楽器テスト
+uv run python examples/debug_oscillators.py  # オシレーターテスト
+uv run python examples/debug_envelopes.py    # エンベロープテスト
+uv run python examples/debug_instruments.py  # 楽器テスト
 ```
 
 デバッグスクリプトは以下を確認します：
@@ -178,20 +178,17 @@ poetry run python examples/debug_instruments.py  # 楽器テスト
 
 ### 2. チュートリアルから始める
 ```bash
-poetry run python examples/educational_tutorial.py
+uv run python examples/educational_tutorial.py
 ```
 
 ### 3. 基本例を試す
 ```bash
-poetry run python examples/basic_examples.py
+uv run python examples/basic_examples.py
 ```
 
 ### 4. Jupyter Notebookでの学習
 ```bash
-# 推奨方法（Poetry 2.x系対応）:
-poetry run jupyter lab  # 直接起動（推奨）
-# または: poetry env activate && jupyter lab
-jupyter lab
+uv run jupyter lab
 # colab_lessons/lesson_01_basics_and_sine_waves.ipynb から開始
 ```
 
@@ -208,7 +205,7 @@ piano = BasicPiano()
 # 楽曲制作...
 
 # 実行
-# poetry run python your_music.py
+# uv run python your_music.py
 ```
 
 ## 教育的な利点
@@ -399,12 +396,12 @@ plt.plot(envelope_data)  # ADSR曲線が見える
 
 ### 必要条件
 - Python 3.8 以上
-- Poetry
+- uv
 
-### Poetryのインストール
+### uvのインストール
 ```bash
-# Poetry がインストールされていない場合
-curl -sSL https://install.python-poetry.org | python3 -
+# uv がインストールされていない場合
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### プロジェクトのセットアップ
@@ -413,22 +410,20 @@ curl -sSL https://install.python-poetry.org | python3 -
 git clone https://github.com/ggszk/simple-audio-programming.git
 cd simple-audio-programming
 
-# 依存関係のインストール
-poetry install
+# 仮想環境の作成と依存関係のインストール
+uv sync
 
 # 開発用依存関係も含める場合
-poetry install --with dev
+uv sync --group dev
 ```
 
-### 仮想環境の利用
+### 使い方
 ```bash
-# 仮想環境をアクティベート
-# 推奨方法（Poetry 2.x系対応）:
-poetry run jupyter lab  # 直接起動（推奨）
-# または: poetry env activate && jupyter lab
+# Jupyter Lab を起動
+uv run jupyter lab
 
-# または、コマンドを直接実行
-poetry run python your_script.py
+# スクリプトを実行
+uv run python your_script.py
 ```
 
 ## 🚀 クイックスタート
@@ -468,36 +463,24 @@ save_audio("output.wav", 44100, signal)
 
 ### 実行方法
 ```bash
-# Poetry環境で実行
-poetry run python your_script.py
-
-# または仮想環境をアクティベートしてから実行
-# 推奨方法（Poetry 2.x系対応）:
-poetry run jupyter lab  # 直接起動（推奨）
-# または: poetry env activate && jupyter lab
-python your_script.py
+uv run python your_script.py
 ```
 
 ### チュートリアルの実行
 ```bash
 # examplesディレクトリのチュートリアル
-poetry run python examples/educational_tutorial.py
+uv run python examples/educational_tutorial.py
 
 # 基本例
-poetry run python examples/basic_examples.py
+uv run python examples/basic_examples.py
 ```
 
 ### Jupyter Notebook でのチュートリアル
 
 #### **ローカル環境での実行**
 ```bash
-# Poetryで仮想環境をアクティベート
-# 推奨方法（Poetry 2.x系対応）:
-poetry run jupyter lab  # 直接起動（推奨）
-# または: poetry env activate && jupyter lab
-
 # Jupyter Lab を起動
-jupyter lab
+uv run jupyter lab
 
 # colab_lessons/ フォルダのノートブックを開く
 # lesson_01_basics_and_sine_waves.ipynb から始めてください
