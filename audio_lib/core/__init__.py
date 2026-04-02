@@ -2,7 +2,6 @@
 core モジュール - 基本的なオーディオ処理機能
 """
 
-from .audio_config import AudioConfig
-from .wave_io import WaveFileIO
+from .audio_signal import AudioSignal, save_audio, load_audio
 
-__all__ = ['AudioConfig', 'WaveFileIO']
+__all__ = ["AudioSignal", "save_audio", "load_audio"]

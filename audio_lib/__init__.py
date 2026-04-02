@@ -1,30 +1,37 @@
 """
-音のプログラミング - リファクタリング版
+音のプログラミング - 教育的音響合成ライブラリ
 
-可読性と教育性を重視した音楽合成ライブラリ
+関数とオブジェクトの使い分け:
+- 波形生成・エンベロープ: 関数（状態なし）
+- フィルター・エフェクト・楽器・シーケンサー: オブジェクト（状態あり）
 """
 
-from .core.audio_config import AudioConfig
-from .core.wave_io import WaveFileIO
-from .synthesis.oscillators import SineWave, SawtoothWave, SquareWave, TriangleWave, NoiseGenerator
-from .synthesis.envelopes import ADSREnvelope, LinearEnvelope
-from .effects.filters import LowPassFilter, HighPassFilter
-from .effects.audio_effects import Reverb, Distortion
-from .synthesis.note_utils import note_to_frequency, frequency_to_note, note_name_to_number
-from .sequencer import Sequencer, Note, Track
+# 信号データ
+from .core.audio_signal import AudioSignal, save_audio, load_audio
+
+# 波形生成（関数）
+from .synthesis.oscillators import sine_wave, sawtooth_wave, square_wave, triangle_wave, white_noise, pink_noise
+
+# エンベロープ（関数）
+from .synthesis.envelopes import adsr, linear_envelope, cosine_envelope
+
+# 音程ユーティリティ（関数）
+from .synthesis.note_utils import note_to_frequency, frequency_to_note, note_name_to_number, number_to_note_name
+
+# フィルター（オブジェクト）
+from .effects.filters import LowPassFilter, HighPassFilter, BandPassFilter
+
+# エフェクト（オブジェクト）
+from .effects.audio_effects import Reverb, Distortion, Delay, Chorus, Compressor
+
+# 楽器（オブジェクト）
 from .instruments.basic_instruments import (
     BaseInstrument, SimpleSynthesizer,
     BasicPiano, BasicOrgan, BasicGuitar, BasicDrum,
-    # 後方互換性のためのエイリアス
-    Piano, Organ, Guitar, Drum
+    Piano, Organ, Guitar, Drum,
 )
 
+# シーケンサー（オブジェクト）
+from .sequencer import Sequencer, Note, Track, create_simple_melody, create_chord
+
 __version__ = "1.0.0"
-__author__ = "音のプログラミング教育チーム"
-
-# デフォルトのオーディオ設定
-default_config = AudioConfig()
-
-# よく使う関数のエイリアス
-save_audio = WaveFileIO.save_mono
-load_audio = WaveFileIO.load_mono

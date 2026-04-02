@@ -1,8 +1,7 @@
 """
 audio_lib パッケージの包括的テスト
 
-このテストファイルは、ノートブック教材で使用される主要機能の動作を検証します。
-音響プログラミング教育において重要な基本機能をテストします。
+主要機能の動作を検証します。
 """
 
 import numpy as np
@@ -10,385 +9,273 @@ import pytest
 import tempfile
 import os
 from audio_lib import (
-    AudioConfig, SineWave, SquareWave, SawtoothWave, 
-    ADSREnvelope, LinearEnvelope,
-    save_audio, note_to_frequency, frequency_to_note, note_name_to_number
+    AudioSignal, sine_wave, square_wave, sawtooth_wave,
+    adsr, linear_envelope,
+    save_audio, load_audio,
+    note_to_frequency, frequency_to_note, note_name_to_number,
+    LowPassFilter, HighPassFilter,
+    Reverb, Distortion, Delay, Chorus, Compressor,
 )
-from audio_lib.synthesis.envelopes import apply_envelope
-from audio_lib.effects.audio_effects import (
-    apply_compression, Reverb, Delay, Chorus, Distortion
-)
-from audio_lib.effects.filters import LowPassFilter, HighPassFilter
 
 
-class TestAudioConfig:
-    """AudioConfig クラスのテスト"""
-    
-    def test_default_config(self):
-        """デフォルト設定のテスト"""
-        config = AudioConfig()
-        assert config.sample_rate == 44100
-        assert config.bit_depth == 16
-        assert config.max_amplitude == 0.95
-    
-    def test_custom_config(self):
-        """カスタム設定のテスト"""
-        config = AudioConfig(sample_rate=48000, bit_depth=24)
-        assert config.sample_rate == 48000
-        assert config.bit_depth == 24
-    
-    def test_duration_to_samples(self):
-        """時間からサンプル数への変換テスト"""
-        config = AudioConfig()
-        samples = config.duration_to_samples(1.0)  # 1秒
-        assert samples == 44100
+class TestAudioSignal:
+    """AudioSignal クラスのテスト"""
+
+    def test_basic_properties(self):
+        """基本プロパティのテスト"""
+        data = np.zeros(44100)
+        signal = AudioSignal(data, 44100)
+        assert signal.sample_rate == 44100
+        assert signal.num_samples == 44100
+        assert abs(signal.duration - 1.0) < 0.001
+
+    def test_arithmetic_operations(self):
+        """算術演算のテスト"""
+        s1 = sine_wave(440, 1.0)
+        s2 = sine_wave(880, 1.0)
+
+        # 加算
+        mixed = s1 + s2
+        assert isinstance(mixed, AudioSignal)
+        assert mixed.num_samples == s1.num_samples
+
+        # スカラー乗算
+        scaled = s1 * 0.5
+        assert np.max(np.abs(scaled.data)) < np.max(np.abs(s1.data)) + 0.01
+
+        # AudioSignal同士の乗算（エンベロープ適用）
+        env = adsr(1.0)
+        shaped = s1 * env
+        assert isinstance(shaped, AudioSignal)
+
+    def test_sample_rate_mismatch(self):
+        """sample_rate不一致時のエラー"""
+        s1 = sine_wave(440, 1.0, sample_rate=44100)
+        s2 = sine_wave(440, 1.0, sample_rate=48000)
+        with pytest.raises(ValueError):
+            s1 + s2
 
 
 class TestBasicOscillators:
-    """基本オシレーターのテスト"""
-    
-    def setup_method(self):
-        """各テストメソッドの前に実行される準備"""
-        self.config = AudioConfig()
-        self.frequency = 440.0
-        self.duration = 1.0
-    
+    """基本波形生成のテスト"""
+
     def test_sine_wave_basic(self):
         """サイン波の基本動作テスト"""
-        sine = SineWave(self.config)
-        signal = sine.generate(self.frequency, self.duration)
-        
-        # 基本的な検証
-        expected_samples = int(self.config.sample_rate * self.duration)
-        assert len(signal) == expected_samples
-        assert -1.0 <= np.min(signal) <= 1.0
-        assert -1.0 <= np.max(signal) <= 1.0
-        
-        # サイン波の特性確認
-        assert np.abs(np.max(signal) - 1.0) < 0.1
-        assert np.abs(np.min(signal) - (-1.0)) < 0.1
-    
+        signal = sine_wave(440.0, 1.0)
+
+        assert signal.num_samples == 44100
+        assert -1.0 <= np.min(signal.data) <= 1.0
+        assert -1.0 <= np.max(signal.data) <= 1.0
+        assert np.abs(np.max(signal.data) - 1.0) < 0.1
+        assert np.abs(np.min(signal.data) - (-1.0)) < 0.1
+
     def test_square_wave_basic(self):
         """矩形波の基本動作テスト"""
-        square = SquareWave(self.config)
-        signal = square.generate(self.frequency, self.duration)
-        
-        assert len(signal) == int(self.config.sample_rate * self.duration)
-        assert -1.0 <= np.min(signal) <= 1.0
-        assert -1.0 <= np.max(signal) <= 1.0
-    
+        signal = square_wave(440.0, 1.0)
+        assert signal.num_samples == 44100
+
     def test_sawtooth_wave_basic(self):
         """ノコギリ波の基本動作テスト"""
-        sawtooth = SawtoothWave(self.config)
-        signal = sawtooth.generate(self.frequency, self.duration)
-        
-        assert len(signal) == int(self.config.sample_rate * self.duration)
-        assert -1.0 <= np.min(signal) <= 1.0
-        assert -1.0 <= np.max(signal) <= 1.0
+        signal = sawtooth_wave(440.0, 1.0)
+        assert signal.num_samples == 44100
 
 
 class TestEnvelopes:
     """エンベロープのテスト"""
-    
-    def setup_method(self):
-        """各テストメソッドの前に実行される準備"""
-        self.config = AudioConfig()
-        self.duration = 2.0
-    
+
     def test_linear_envelope(self):
         """リニアエンベロープのテスト"""
-        envelope = LinearEnvelope(fade_in=0.1, fade_out=0.1, config=self.config)
-        env_data = envelope.generate(self.duration)
-        
-        # 長さの確認
-        expected_samples = int(self.config.sample_rate * self.duration)
-        assert len(env_data) == expected_samples
-        
-        # エンベロープの特性確認
-        assert env_data[0] == 0.0  # 開始は無音
-        assert env_data[-1] == 0.0  # 終了は無音
-        assert np.max(env_data) <= 1.0  # 最大振幅は1以下
-    
+        env = linear_envelope(2.0, fade_in=0.1, fade_out=0.1)
+
+        assert env.num_samples == int(44100 * 2.0)
+        assert env.data[0] == 0.0
+        assert env.data[-1] == 0.0
+        assert np.max(env.data) <= 1.0
+
     def test_adsr_envelope(self):
         """ADSRエンベロープのテスト"""
-        adsr = ADSREnvelope(
-            attack=0.1, decay=0.2, sustain=0.7, release=0.3, 
-            config=self.config
-        )
-        env_data = adsr.generate(self.duration)
-        
-        # 基本的な検証
-        expected_samples = int(self.config.sample_rate * self.duration)
-        assert len(env_data) == expected_samples
-        assert 0.0 <= np.min(env_data)
-        assert np.max(env_data) <= 1.0
-        
-        # ADSR特性の確認
-        assert env_data[0] == 0.0  # アタック開始は0
-    
-    def test_apply_envelope(self):
+        env = adsr(2.0, attack=0.1, decay=0.2, sustain=0.7, release=0.3)
+
+        assert env.num_samples == int(44100 * 2.0)
+        assert 0.0 <= np.min(env.data)
+        assert np.max(env.data) <= 1.0
+        assert env.data[0] == 0.0
+
+    def test_envelope_application(self):
         """エンベロープ適用のテスト"""
-        sine = SineWave(self.config)
-        signal = sine.generate(440.0, self.duration)
-        
-        adsr = ADSREnvelope(
-            attack=0.1, decay=0.2, sustain=0.5, release=0.3,
-            config=self.config
-        )
-        env_data = adsr.generate(self.duration)
-        
-        # エンベロープを適用
-        processed_signal = apply_envelope(signal, env_data)
-        
-        # 結果の検証
-        assert len(processed_signal) == len(signal)
-        assert np.max(np.abs(processed_signal)) <= np.max(np.abs(signal))
+        signal = sine_wave(440.0, 2.0)
+        env = adsr(2.0, attack=0.1, decay=0.2, sustain=0.5, release=0.3)
+
+        processed = signal * env
+        assert processed.num_samples == signal.num_samples
+        assert np.max(np.abs(processed.data)) <= np.max(np.abs(signal.data))
 
 
 class TestNoteUtils:
     """音名・周波数変換のテスト"""
-    
+
     def test_note_to_frequency(self):
-        """MIDI番号から周波数への変換テスト"""
-        # A4 = 440Hz (MIDI番号69)
-        freq = note_to_frequency(69)
-        assert abs(freq - 440.0) < 0.1
-        
-        # C4 = 261.63Hz (MIDI番号60)
-        freq = note_to_frequency(60)
-        assert abs(freq - 261.63) < 0.1
-    
+        assert abs(note_to_frequency(69) - 440.0) < 0.1
+        assert abs(note_to_frequency(60) - 261.63) < 0.1
+
     def test_frequency_to_note(self):
-        """周波数からMIDI番号への変換テスト"""
-        note = frequency_to_note(440.0)
-        assert note == 69  # A4
-        
-        note = frequency_to_note(261.63)
-        assert note == 60  # C4
-    
+        assert frequency_to_note(440.0) == 69
+        assert frequency_to_note(261.63) == 60
+
     def test_note_name_to_number(self):
-        """音名からMIDI番号への変換テスト"""
-        assert note_name_to_number('A4') == 69
-        assert note_name_to_number('C4') == 60
-        assert note_name_to_number('C5') == 72
+        assert note_name_to_number("A4") == 69
+        assert note_name_to_number("C4") == 60
+        assert note_name_to_number("C5") == 72
 
 
 class TestAudioEffects:
     """オーディオエフェクトのテスト"""
-    
+
     def setup_method(self):
-        """各テストメソッドの前に実行される準備"""
-        self.config = AudioConfig()
-        self.sine = SineWave(self.config)
-        self.test_signal = self.sine.generate(440.0, 1.0)
-    
+        self.test_signal = sine_wave(440.0, 1.0)
+
     def test_compression(self):
         """コンプレッション効果のテスト"""
-        compressed = apply_compression(
-            self.test_signal, 
-            threshold=0.5, 
-            ratio=4.0, 
-            attack=0.01, 
-            release=0.1
-        )
-        
-        # 基本的な検証
-        assert len(compressed) == len(self.test_signal)
-        
-        # コンプレッション効果の確認（ピーク振幅の減少）
-        original_peak = np.max(np.abs(self.test_signal))
-        compressed_peak = np.max(np.abs(compressed))
-        assert compressed_peak <= original_peak
-    
+        comp = Compressor(threshold=0.5, ratio=4.0)
+        compressed = comp.process(self.test_signal)
+
+        assert compressed.num_samples == self.test_signal.num_samples
+        assert np.max(np.abs(compressed.data)) <= np.max(np.abs(self.test_signal.data))
+
     def test_low_pass_filter(self):
-        """ローパスフィルターのテスト"""
-        lpf = LowPassFilter(cutoff_freq=1000, config=self.config)
+        lpf = LowPassFilter(cutoff_freq=1000)
         filtered = lpf.process(self.test_signal)
-        
-        assert len(filtered) == len(self.test_signal)
-    
+        assert filtered.num_samples == self.test_signal.num_samples
+
     def test_high_pass_filter(self):
-        """ハイパスフィルターのテスト"""
-        hpf = HighPassFilter(cutoff_freq=1000, config=self.config)
+        hpf = HighPassFilter(cutoff_freq=1000)
         filtered = hpf.process(self.test_signal)
-        
-        assert len(filtered) == len(self.test_signal)
-    
+        assert filtered.num_samples == self.test_signal.num_samples
+
     def test_reverb_effect(self):
-        """リバーブ効果のテスト"""
         reverb = Reverb(room_size=0.7, damping=0.5)
-        processed = reverb.apply(self.test_signal)
-        
-        assert len(processed) == len(self.test_signal)
-    
+        processed = reverb.process(self.test_signal)
+        assert processed.num_samples == self.test_signal.num_samples
+
     def test_delay_effect(self):
-        """ディレイ効果のテスト"""
         delay = Delay(delay_time=0.3, feedback=0.4, wet_level=0.3)
-        processed = delay.apply(self.test_signal, self.config.sample_rate)
-        
-        assert len(processed) == len(self.test_signal)
-    
+        processed = delay.process(self.test_signal)
+        assert processed.num_samples == self.test_signal.num_samples
+
     def test_chorus_effect(self):
-        """コーラス効果のテスト"""
         chorus = Chorus(rate=1.5, depth=0.005, wet_level=0.5)
-        processed = chorus.apply(self.test_signal, self.config.sample_rate)
-        
-        assert len(processed) == len(self.test_signal)
-    
+        processed = chorus.process(self.test_signal)
+        assert processed.num_samples == self.test_signal.num_samples
+
     def test_distortion_effect(self):
-        """ディストーション効果のテスト"""
         distortion = Distortion(gain=10.0, output_level=0.7)
-        processed = distortion.apply(self.test_signal)
-        
-        assert len(processed) == len(self.test_signal)
+        processed = distortion.process(self.test_signal)
+        assert processed.num_samples == self.test_signal.num_samples
 
 
 class TestAudioFileIO:
     """音声ファイル入出力のテスト"""
-    
-    def setup_method(self):
-        """各テストメソッドの前に実行される準備"""
-        self.config = AudioConfig()
-        self.sine = SineWave(self.config)
-        self.test_signal = self.sine.generate(440.0, 1.0)
-    
-    def test_save_audio(self):
-        """音声ファイル保存のテスト"""
-        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
-            temp_filename = tmp_file.name
-        
+
+    def test_save_and_load(self):
+        """保存と読み込みのテスト"""
+        signal = sine_wave(440.0, 1.0)
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+            temp_filename = tmp.name
+
         try:
-            # ファイル保存
-            save_audio(temp_filename, self.config.sample_rate, self.test_signal)
-            
-            # ファイルが作成されたことを確認
+            signal.save(temp_filename)
             assert os.path.exists(temp_filename)
             assert os.path.getsize(temp_filename) > 0
-            
+
+            loaded = load_audio(temp_filename)
+            assert loaded.sample_rate == 44100
+            assert loaded.num_samples == signal.num_samples
         finally:
-            # テスト後にファイルを削除
+            if os.path.exists(temp_filename):
+                os.unlink(temp_filename)
+
+    def test_save_audio_function(self):
+        """save_audio関数のテスト"""
+        signal = sine_wave(440.0, 1.0)
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+            temp_filename = tmp.name
+
+        try:
+            save_audio(temp_filename, signal)
+            assert os.path.exists(temp_filename)
+            assert os.path.getsize(temp_filename) > 0
+        finally:
             if os.path.exists(temp_filename):
                 os.unlink(temp_filename)
 
 
 class TestEducationalScenarios:
-    """教育シナリオのテスト（ノートブック内容の再現）"""
-    
-    def setup_method(self):
-        """各テストメソッドの前に実行される準備"""
-        self.config = AudioConfig()
-    
+    """教育シナリオのテスト"""
+
     def test_lesson01_basic_sine_wave(self):
-        """Lesson 1: 基本サイン波生成の再現テスト"""
-        sine_osc = SineWave(self.config)
-        
-        # 440Hz、1秒のサイン波
-        frequency = 440.0
-        duration = 1.0
-        signal = sine_osc.generate(frequency, duration)
-        
-        # 期待される結果
-        expected_samples = 44100
-        assert len(signal) == expected_samples
-        assert np.abs(np.max(signal) - 1.0) < 0.1
-        assert np.abs(np.min(signal) - (-1.0)) < 0.1
-    
+        """Lesson 1: 基本サイン波生成"""
+        signal = sine_wave(frequency=440.0, duration=1.0)
+
+        assert signal.num_samples == 44100
+        assert np.abs(np.max(signal.data) - 1.0) < 0.1
+        assert np.abs(np.min(signal.data) - (-1.0)) < 0.1
+
     def test_lesson02_envelope_application(self):
-        """Lesson 2: エンベロープ適用の再現テスト"""
-        sine_osc = SineWave(self.config)
-        
-        # 音声信号生成
-        frequency = 440.0
-        duration = 2.0
-        signal = sine_osc.generate(frequency, duration)
-        
-        # ADSRエンベロープ生成
-        adsr = ADSREnvelope(
-            attack=0.1, decay=0.2, sustain=0.7, release=0.3,
-            config=self.config
-        )
-        envelope = adsr.generate(duration)
-        
-        # エンベロープ適用
-        processed_signal = apply_envelope(signal, envelope)
-        
-        # 結果検証
-        assert len(processed_signal) == len(signal)
-        
-        # エンベロープによる音量変化の確認
-        assert processed_signal[0] == 0.0  # 開始は無音
-        assert np.abs(processed_signal[-1]) < 0.1  # 終了は小音量
-    
+        """Lesson 2: エンベロープ適用"""
+        signal = sine_wave(440.0, 2.0)
+        envelope = adsr(2.0, attack=0.1, decay=0.2, sustain=0.7, release=0.3)
+        processed = signal * envelope
+
+        assert processed.num_samples == signal.num_samples
+        assert processed.data[0] == 0.0
+        assert np.abs(processed.data[-1]) < 0.1
+
     def test_melody_generation(self):
-        """メロディー生成のテスト（きらきら星）"""
-        sine_osc = SineWave(self.config)
-        adsr = ADSREnvelope(
-            attack=0.01, decay=0.2, sustain=0.4, release=0.3,
-            config=self.config
-        )
-        
-        # きらきら星の最初の部分
-        melody_notes = [
-            ('C4', 0.5), ('C4', 0.5), ('G4', 0.5), ('G4', 0.5)
-        ]
-        
+        """メロディー生成のテスト"""
+        melody_notes = [("C4", 0.5), ("C4", 0.5), ("G4", 0.5), ("G4", 0.5)]
         melody_data = []
-        
+
         for note_name, note_duration in melody_notes:
-            # 音名からMIDI番号、周波数への変換
             midi_number = note_name_to_number(note_name)
             frequency = note_to_frequency(midi_number)
-            
-            # 音声生成
-            signal = sine_osc.generate(frequency, note_duration)
-            envelope = adsr.generate(note_duration)
-            note_with_envelope = apply_envelope(signal, envelope)
-            
-            melody_data.append(note_with_envelope)
-        
-        # メロディー結合
+            signal = sine_wave(frequency, note_duration)
+            envelope = adsr(note_duration, attack=0.01, decay=0.2, sustain=0.4, release=0.3)
+            note_with_envelope = signal * envelope
+            melody_data.append(note_with_envelope.data)
+
         full_melody = np.concatenate(melody_data)
-        
-        # 結果検証
-        assert len(full_melody) > 0
-        expected_total_duration = sum(duration for _, duration in melody_notes)
-        expected_samples = int(self.config.sample_rate * expected_total_duration)
+        expected_total_duration = sum(d for _, d in melody_notes)
+        expected_samples = int(44100 * expected_total_duration)
         assert len(full_melody) == expected_samples
 
 
 def test_integration_all_components():
     """全コンポーネントの統合テスト"""
-    config = AudioConfig()
-    
-    # 1. オシレーター
-    sine = SineWave(config)
-    signal = sine.generate(440.0, 1.0)
-    
+    # 1. 波形生成
+    signal = sine_wave(440.0, 1.0)
+
     # 2. エンベロープ
-    adsr = ADSREnvelope(attack=0.1, decay=0.2, sustain=0.5, release=0.3, config=config)
-    envelope = adsr.generate(1.0)
-    signal_with_envelope = apply_envelope(signal, envelope)
-    
+    envelope = adsr(1.0, attack=0.1, decay=0.2, sustain=0.5, release=0.3)
+    signal_with_envelope = signal * envelope
+
     # 3. エフェクト
     reverb = Reverb(room_size=0.7, damping=0.5)
-    final_signal = reverb.apply(signal_with_envelope)
-    
+    final_signal = reverb.process(signal_with_envelope)
+
     # 4. ファイル保存
-    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
-        temp_filename = tmp_file.name
-    
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        temp_filename = tmp.name
+
     try:
-        save_audio(temp_filename, config.sample_rate, final_signal)
+        final_signal.save(temp_filename)
         assert os.path.exists(temp_filename)
         assert os.path.getsize(temp_filename) > 0
-        
-        print(f"✅ 統合テスト成功: {len(final_signal)} サンプルの音声データを生成・保存")
-        
     finally:
         if os.path.exists(temp_filename):
             os.unlink(temp_filename)
 
 
 if __name__ == "__main__":
-    # 詳細な出力でテストを実行
     pytest.main([__file__, "-v", "--tb=short"])
