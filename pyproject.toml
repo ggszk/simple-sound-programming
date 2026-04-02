@@ -11,7 +11,7 @@ version = "1.0.0"
 description = "音響プログラミング学習用の教育的Pythonライブラリ"
 authors = [{name = "Simple Audio Programming Team", email = "gen@ggszk.org"}]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.21.0",
     "scipy>=1.7.0",
@@ -33,7 +33,7 @@ dev = [
 
 [tool.ruff]
 line-length = 127
-target-version = "py38"
+target-version = "py310"
 exclude = [".venv", "build", "dist"]
 
 [tool.ruff.lint]
@@ -50,7 +50,7 @@ max-complexity = 10
 quote-style = "double"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

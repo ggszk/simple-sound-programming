@@ -395,7 +395,7 @@ plt.plot(envelope_data)  # ADSR曲線が見える
 ## 📦 インストール
 
 ### 必要条件
-- Python 3.8 以上
+- Python 3.10 以上
 - uv
 
 ### uvのインストール
