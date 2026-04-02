@@ -65,12 +65,12 @@ result.save("my_song.wav")
 
 | レッスン | 内容 | Colab |
 |---------|------|-------|
-| Lesson 01 | 基礎とサイン波 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb) |
+| Lesson 01 | 基礎とサイン波・サンプリング | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb) |
 | Lesson 02 | エンベロープとADSR | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb) |
-| Lesson 03 | フィルターと音響設計 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_filters_and_sound_design.ipynb) |
-| Lesson 04 | オーディオエフェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_audio_effects_and_dynamics.ipynb) |
-| Lesson 05 | MIDIとシーケンサー | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_midi_and_sequencer.ipynb) |
-| Lesson 06 | サンプリングと分析 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_sampling_and_analysis.ipynb) |
+| Lesson 03 | 周波数分析（FFT） | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb) |
+| Lesson 04 | フィルターと音色デザイン | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb) |
+| Lesson 05 | オーディオエフェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb) |
+| Lesson 06 | MIDIとシーケンサー | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb) |
 | Lesson 07 | 最終プロジェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb) |
 
 ## API一覧
