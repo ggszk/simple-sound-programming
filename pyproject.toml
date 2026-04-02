@@ -1,31 +1,37 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[tool.hatch.build.targets.wheel]
+packages = ["audio_lib"]
+
+[project]
 name = "simple-audio-programming"
 version = "1.0.0"
 description = "音響プログラミング学習用の教育的Pythonライブラリ"
-authors = ["Simple Audio Programming Team <gen@ggszk.org>"]
+authors = [{name = "Simple Audio Programming Team", email = "gen@ggszk.org"}]
 readme = "README.md"
-packages = [{include = "audio_lib"}]
-homepage = "https://github.com/ggszk/simple-audio-programming"
-repository = "https://github.com/ggszk/simple-audio-programming.git"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.21.0",
+    "scipy>=1.7.0",
+    "matplotlib>=3.5.0",
+    "jupyter>=1.0.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.21.0"
-scipy = "^1.7.0"
-matplotlib = "^3.5.0"
-jupyter = "^1.0.0"
+[project.urls]
+Homepage = "https://github.com/ggszk/simple-audio-programming"
+Repository = "https://github.com/ggszk/simple-audio-programming.git"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0.0"
-pytest-cov = "^4.0.0"
-flake8 = "^5.0.0"
-black = "^22.0.0"
-isort = "^5.10.0"
-mypy = "^1.0.0"
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "flake8>=5.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "mypy>=1.0.0",
+]
 
 [tool.black]
 line-length = 88
