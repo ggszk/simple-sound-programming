@@ -20,10 +20,10 @@
 ### 実行方法:
 ```bash
 # 個別実行
-poetry run python examples/debug_oscillators.py
+uv run python examples/debug_oscillators.py
 
 # 全体確認
-poetry run python examples/debug_all.py
+uv run python examples/debug_all.py
 ```
 
 ## tests/ ディレクトリ
@@ -38,10 +38,10 @@ poetry run python examples/debug_all.py
 ### 実行方法:
 ```bash
 # pytest実行
-poetry run pytest tests/
+uv run pytest tests/
 
 # カバレッジ付き
-poetry run pytest tests/ --cov=audio_lib
+uv run pytest tests/ --cov=audio_lib
 ```
 
 ## 使い分けガイドライン

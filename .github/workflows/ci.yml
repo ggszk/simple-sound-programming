@@ -1,16 +1,18 @@
 name: CI
 
-# 一時的に無効化（軽量版を使用中）
 on:
-  workflow_dispatch:  # 手動実行のみ
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,19 +27,9 @@ jobs:
       run: uv sync --group dev
 
     - name: Lint with ruff
-      timeout-minutes: 5
+      timeout-minutes: 2
       run: uv run ruff check .
 
     - name: Test with pytest
-      timeout-minutes: 10
-      run: |
-        uv run pytest tests/ --cov=audio_lib --cov-report=xml -v
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      if: matrix.python-version == '3.11'
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+      timeout-minutes: 5
+      run: uv run pytest tests/ -v
