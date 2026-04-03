@@ -33,7 +33,10 @@ def sine_wave(frequency: float, duration: float, phase: float = 0.0, sample_rate
 
 
 def sawtooth_wave(frequency: float, duration: float, phase: float = 0.0, sample_rate: int = 44100) -> AudioSignal:
-    """ノコギリ波を生成（バンドリミット処理付き）
+    """ノコギリ波を生成（帯域制限付き加算合成）
+
+    ナイキスト周波数以下の倍音のみを加算合成することで、
+    エイリアシングのない滑らかなノコギリ波を生成する。
 
     Args:
         frequency: 周波数 (Hz)
@@ -45,12 +48,15 @@ def sawtooth_wave(frequency: float, duration: float, phase: float = 0.0, sample_
         AudioSignal: ノコギリ波データ
     """
     t = _create_time_array(duration, sample_rate)
+    nyquist = sample_rate / 2.0
+    num_harmonics = int(nyquist / frequency)
 
-    # エイリアシング対策: 高周波の場合は正弦波で近似
-    if frequency > sample_rate / 8:
-        data = np.sin(2 * np.pi * frequency * t + 2 * np.pi * phase)
-    else:
-        data = 2.0 * ((frequency * t + phase) % 1.0) - 1.0
+    # フーリエ級数: sawtooth(t) = -2/π * Σ (-1)^k * sin(2πkft) / k
+    data = np.zeros_like(t)
+    phase_rad = 2 * np.pi * phase
+    for k in range(1, num_harmonics + 1):
+        data += ((-1.0) ** k) * np.sin(2 * np.pi * k * frequency * t + k * phase_rad) / k
+    data *= -2.0 / np.pi
 
     return AudioSignal(data, sample_rate)
 
