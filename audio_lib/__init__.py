@@ -34,4 +34,7 @@ from .instruments.basic_instruments import (
 # シーケンサー（オブジェクト）
 from .sequencer import Sequencer, Note, Track, create_simple_melody, create_chord
 
+# ノートブック用ヘルパー（オプショナル依存: matplotlib, IPython）
+# audio_lib.notebook として利用可能
+
 __version__ = "1.0.0"
