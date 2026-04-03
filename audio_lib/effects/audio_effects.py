@@ -10,19 +10,30 @@ from ..core.audio_signal import AudioSignal
 
 
 class Reverb:
-    """リバーブ（残響）エフェクト"""
+    """Schroeder方式リバーブ（残響）エフェクト
+
+    並列コムフィルタ4本 → 直列オールパスフィルタ2本の構成。
+    """
+
+    # コムフィルタの遅延時間 (秒) — Freeverbベースの値
+    _BASE_COMB_DELAYS = [0.0353, 0.0366, 0.0338, 0.0322]
+    # オールパスフィルタの遅延時間 (秒)
+    _ALLPASS_DELAYS = [0.0126, 0.0100]
+    _ALLPASS_GAIN = 0.5
+    # コムフィルタへの入力ゲイン（共振によるエネルギー蓄積を抑制）
+    _INPUT_GAIN = 0.015
 
     def __init__(
         self,
         room_size: float = 0.5,
         damping: float = 0.5,
-        wet_level: float = 0.3,
+        wet_level: float = 0.5,
         sample_rate: int = 44100,
     ):
         """
         Args:
-            room_size: 部屋のサイズ (0.0-1.0)
-            damping: ダンピング量 (0.0-1.0)
+            room_size: 部屋のサイズ (0.0-1.0) — フィードバック量に影響
+            damping: ダンピング量 (0.0-1.0) — 高域の減衰度合い
             wet_level: エフェクト音のレベル (0.0-1.0)
             sample_rate: サンプリングレート (Hz)
         """
@@ -31,20 +42,29 @@ class Reverb:
         self.damping = damping
         self.wet_level = wet_level
         self.dry_level = 1.0 - wet_level
-        self.reverb_time = room_size * 2.0
 
-        # 遅延ラインの設定
-        self.delay_times = [0.03, 0.05, 0.07, 0.09]
-        self.delays: list[np.ndarray] = []
-        self.feedbacks: list[float] = []
+        # コムフィルタの初期化
+        self.comb_feedbacks: list[float] = []
+        self.comb_buffers: list[np.ndarray] = []
+        self.comb_indices: list[int] = []
+        self.comb_filter_states: list[float] = []
 
-        for delay_time in self.delay_times:
+        for delay_time in self._BASE_COMB_DELAYS:
             delay_samples = int(delay_time * sample_rate)
-            self.delays.append(np.zeros(delay_samples))
-            feedback = min(np.exp(-3 * delay_time / self.reverb_time), 0.9)
-            self.feedbacks.append(feedback)
+            self.comb_buffers.append(np.zeros(delay_samples))
+            self.comb_indices.append(0)
+            self.comb_filter_states.append(0.0)
+            # room_size でフィードバック量を制御 (0.7〜0.95)
+            self.comb_feedbacks.append(0.7 + room_size * 0.25)
 
-        self.delay_indices = [0] * len(self.delays)
+        # オールパスフィルタの初期化
+        self.ap_buffers: list[np.ndarray] = []
+        self.ap_indices: list[int] = []
+
+        for delay_time in self._ALLPASS_DELAYS:
+            delay_samples = int(delay_time * sample_rate)
+            self.ap_buffers.append(np.zeros(delay_samples))
+            self.ap_indices.append(0)
 
     def process(self, signal: AudioSignal) -> AudioSignal:
         """リバーブエフェクトを適用
@@ -59,18 +79,35 @@ class Reverb:
         output = np.zeros_like(input_data)
 
         for n, x_n in enumerate(input_data):
-            reverb_sum = 0.0
+            scaled_input = x_n * self._INPUT_GAIN
 
-            for i, (delay_line, feedback) in enumerate(zip(self.delays, self.feedbacks)):
-                delayed_sample = delay_line[self.delay_indices[i]]
-                reverb_sum += delayed_sample
+            # --- 並列コムフィルタ ---
+            comb_sum = 0.0
+            for i in range(len(self.comb_buffers)):
+                buf = self.comb_buffers[i]
+                idx = self.comb_indices[i]
+                delayed = buf[idx]
 
-                damped_feedback = feedback * self.damping
-                delay_line[self.delay_indices[i]] = x_n + damped_feedback * delayed_sample
-                self.delay_indices[i] = (self.delay_indices[i] + 1) % len(delay_line)
+                # ダンピング: 1次ローパスフィルタをフィードバック経路に挿入
+                self.comb_filter_states[i] = (
+                    delayed * (1.0 - self.damping) + self.comb_filter_states[i] * self.damping
+                )
+                buf[idx] = scaled_input + self.comb_feedbacks[i] * self.comb_filter_states[i]
+                self.comb_indices[i] = (idx + 1) % len(buf)
+                comb_sum += delayed
 
-            wet_signal = reverb_sum / len(self.delays)
-            output[n] = self.dry_level * x_n + self.wet_level * wet_signal
+            mixed = comb_sum / len(self.comb_buffers)
+
+            # --- 直列オールパスフィルタ ---
+            for i in range(len(self.ap_buffers)):
+                buf = self.ap_buffers[i]
+                idx = self.ap_indices[i]
+                delayed = buf[idx]
+                buf[idx] = mixed + self._ALLPASS_GAIN * delayed
+                mixed = delayed - self._ALLPASS_GAIN * mixed
+                self.ap_indices[i] = (idx + 1) % len(buf)
+
+            output[n] = self.dry_level * x_n + self.wet_level * mixed
 
         # クリッピング防止
         max_amplitude = np.max(np.abs(output))
