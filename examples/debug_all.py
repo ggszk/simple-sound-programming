@@ -18,7 +18,7 @@ from examples.debug_envelopes import (
 from examples.debug_instruments import debug_piano, debug_guitar, debug_drum, debug_sequencer, debug_note_utilities
 
 
-def run_all_tests():
+def run_all_tests():  # noqa: C901
     """全てのデバッグテストを実行"""
     print("🔧 Simple Audio Programming ライブラリ全体デバッグ")
     print("=" * 60)
