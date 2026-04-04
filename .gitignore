@@ -81,6 +81,9 @@ venv.bak/
 *.aiff
 *.flac
 
+# Generated images (examples)
+*.png
+
 # Temporary files
 temp/
 tmp/
