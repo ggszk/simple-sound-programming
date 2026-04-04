@@ -17,6 +17,7 @@ dependencies = [
     "scipy>=1.7.0",
     "matplotlib>=3.5.0",
     "jupyter>=1.0.0",
+    "pedalboard>=0.9.22",
 ]
 
 [project.urls]

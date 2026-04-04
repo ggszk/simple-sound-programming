@@ -10,6 +10,23 @@ import numpy as np
 from .core.audio_signal import AudioSignal
 
 
+def apply_effect(signal: AudioSignal, effect) -> AudioSignal:
+    """pedalboard のエフェクトを AudioSignal に適用するヘルパー
+
+    Args:
+        signal: AudioSignal オブジェクト
+        effect: pedalboard のエフェクト (Reverb, Delay, Chorus 等) または Pedalboard チェーン
+
+    Returns:
+        AudioSignal: エフェクト適用後の信号
+    """
+    import numpy as np
+
+    input_2d = signal.data.astype(np.float32).reshape(1, -1)
+    output_2d = effect.process(input_2d, signal.sample_rate)
+    return AudioSignal(output_2d.flatten().astype(np.float64), signal.sample_rate)
+
+
 def play_sound(signal: AudioSignal, title: str = "Audio"):
     """音声を再生するヘルパー関数
 

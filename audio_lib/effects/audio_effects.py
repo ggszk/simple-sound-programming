@@ -21,7 +21,7 @@ class Reverb:
     _ALLPASS_DELAYS = [0.0126, 0.0100]
     _ALLPASS_GAIN = 0.5
     # コムフィルタへの入力ゲイン（共振によるエネルギー蓄積を抑制）
-    _INPUT_GAIN = 0.015
+    _INPUT_GAIN = 0.15
 
     def __init__(
         self,
