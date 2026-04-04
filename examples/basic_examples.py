@@ -17,6 +17,7 @@ from audio_lib import (
     Guitar,
     Drum,
     Sequencer,
+    Track,
 )
 
 
@@ -137,14 +138,17 @@ def example_05_sequencer_demo():
     # 楽器を準備
     piano = Piano()
     guitar = Guitar()
-    kick_drum = Drum("kick")
-    snare_drum = Drum("snare")
+    drum = Drum()
 
-    # トラックを追加
-    piano_track = sequencer.add_track(piano, "Piano")
-    guitar_track = sequencer.add_track(guitar, "Guitar")
-    kick_track = sequencer.add_track(kick_drum, "Kick")
-    snare_track = sequencer.add_track(snare_drum, "Snare")
+    # トラックを作成して追加
+    piano_track = Track("Piano", piano)
+    guitar_track = Track("Guitar", guitar)
+    kick_track = Track("Kick", drum)
+    snare_track = Track("Snare", drum)
+    sequencer.add_track(piano_track)
+    sequencer.add_track(guitar_track)
+    sequencer.add_track(kick_track)
+    sequencer.add_track(snare_track)
 
     # ピアノのコード進行
     chord_duration = 2.0
@@ -195,7 +199,8 @@ def example_05_sequencer_demo():
 
     # レンダリングして保存
     sequencer.master_volume = 0.8
-    sequencer.render("example_05_sequencer_demo.wav")
+    result = sequencer.render()
+    save_audio("example_05_sequencer_demo.wav", result)
     print("→ example_05_sequencer_demo.wav を保存しました")
 
 

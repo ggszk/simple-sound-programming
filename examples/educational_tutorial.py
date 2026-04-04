@@ -234,15 +234,13 @@ def tutorial_04_filter_effects():
     # 2. ローパスフィルター（低音域のみ通す）
     print("  2. ローパスフィルター適用")
     lpf = LowPassFilter(cutoff_freq=800)
-    signal_lpf = lpf.process(signal.data.copy())
-    signal_lpf_audio = AudioSignal(signal_lpf, signal.sample_rate)
+    signal_lpf_audio = lpf.process(signal)
     save_audio("tutorial_04_lowpass.wav", signal_lpf_audio)
 
     # 3. さらに低いカットオフ周波数
     print("  3. より強いローパスフィルター")
     lpf_strong = LowPassFilter(cutoff_freq=400)
-    signal_lpf_strong = lpf_strong.process(signal.data.copy())
-    signal_lpf_strong_audio = AudioSignal(signal_lpf_strong, signal.sample_rate)
+    signal_lpf_strong_audio = lpf_strong.process(signal)
     save_audio("tutorial_04_lowpass_strong.wav", signal_lpf_strong_audio)
 
     # スペクトラム比較
@@ -250,8 +248,8 @@ def tutorial_04_filter_effects():
 
     signals = {
         "原音": signal.data,
-        "LPF 800Hz": signal_lpf,
-        "LPF 400Hz": signal_lpf_strong,
+        "LPF 800Hz": signal_lpf_audio.data,
+        "LPF 400Hz": signal_lpf_strong_audio.data,
     }
 
     for i, (name, sig) in enumerate(signals.items()):
@@ -306,16 +304,14 @@ def tutorial_05_reverb_effect():
 
     # 2. 短いリバーブ
     print("  2. 短いリバーブ")
-    reverb_short = Reverb(reverb_time=0.5, wet_level=0.3)
-    signal_reverb_short_data = reverb_short.process(signal_with_tail.data.copy())
-    signal_reverb_short = AudioSignal(signal_reverb_short_data, signal_with_tail.sample_rate)
+    reverb_short = Reverb(room_size=0.3, damping=0.7, wet_level=0.3)
+    signal_reverb_short = reverb_short.process(signal_with_tail)
     save_audio("tutorial_05_reverb_short.wav", signal_reverb_short)
 
     # 3. 長いリバーブ
     print("  3. 長いリバーブ（ホールのような響き）")
-    reverb_long = Reverb(reverb_time=2.0, wet_level=0.5)
-    signal_reverb_long_data = reverb_long.process(signal_with_tail.data.copy())
-    signal_reverb_long = AudioSignal(signal_reverb_long_data, signal_with_tail.sample_rate)
+    reverb_long = Reverb(room_size=0.9, damping=0.2, wet_level=0.5)
+    signal_reverb_long = reverb_long.process(signal_with_tail)
     save_audio("tutorial_05_reverb_long.wav", signal_reverb_long)
 
     # 波形比較
@@ -323,8 +319,8 @@ def tutorial_05_reverb_effect():
 
     signals = {
         "ドライ音": signal_with_tail.data,
-        "短いリバーブ": signal_reverb_short_data,
-        "長いリバーブ": signal_reverb_long_data,
+        "短いリバーブ": signal_reverb_short.data,
+        "長いリバーブ": signal_reverb_long.data,
     }
 
     for i, (name, sig) in enumerate(signals.items()):

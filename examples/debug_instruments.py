@@ -14,6 +14,7 @@ from audio_lib import (
     Guitar,
     Drum,
     Sequencer,
+    Track,
 )
 
 
@@ -29,7 +30,7 @@ def debug_piano():
         midi_number = note_name_to_number(note)
         duration = 2.0
 
-        signal = piano.play_note(midi_number, duration)
+        signal = piano.play_note(midi_number, velocity=100, duration=duration)
 
         print(f"✅ Piano音生成成功: {note} (MIDI: {midi_number})")
         print(f"   長さ: {duration}秒")
@@ -58,7 +59,7 @@ def debug_guitar():
         midi_number = note_name_to_number(note)
         duration = 2.0
 
-        signal = guitar.play_note(midi_number, duration)
+        signal = guitar.play_note(midi_number, velocity=100, duration=duration)
 
         print(f"✅ Guitar音生成成功: {note} (MIDI: {midi_number})")
         print(f"   長さ: {duration}秒")
@@ -92,7 +93,7 @@ def debug_drum():
         duration = 1.0
 
         for drum_name, midi_number in drum_sounds.items():
-            signal = drum.play_note(midi_number, duration)
+            signal = drum.play_note(midi_number, velocity=100, duration=duration)
 
             print(f"✅ Drum音生成成功: {drum_name} (MIDI: {midi_number})")
             print(f"   長さ: {duration}秒")
@@ -117,42 +118,30 @@ def debug_sequencer():
     sequencer = Sequencer()
 
     try:
-        # 楽器を追加
+        # 楽器を準備
         piano = Piano()
         drum = Drum()
 
-        sequencer.add_instrument("piano", piano)
-        sequencer.add_instrument("drums", drum)
+        # トラックを作成して追加
+        piano_track = Track("Piano", piano)
+        drum_track = Track("Drums", drum)
+        sequencer.add_track(piano_track)
+        sequencer.add_track(drum_track)
 
-        print("✅ 楽器の追加成功: piano, drums")
+        print("✅ トラックの追加成功: Piano, Drums")
 
         # 簡単なシーケンスを作成
-        # ピアノでCメジャーコード
-        piano_notes = [
-            (0.0, "piano", "C4", 1.0),  # 0秒にC4を1秒
-            (0.0, "piano", "E4", 1.0),  # 0秒にE4を1秒
-            (0.0, "piano", "G4", 1.0),  # 0秒にG4を1秒
-            (1.0, "piano", "F4", 1.0),  # 1秒にF4を1秒
-            (1.0, "piano", "A4", 1.0),  # 1秒にA4を1秒
-            (1.0, "piano", "C5", 1.0),  # 1秒にC5を1秒
-        ]
+        # ピアノでCメジャーコード → Fメジャーコード
+        for note_name in ["C4", "E4", "G4"]:
+            piano_track.add_note(note_name, 100, 0.0, 1.0)
+        for note_name in ["F4", "A4", "C5"]:
+            piano_track.add_note(note_name, 100, 1.0, 1.0)
 
         # ドラムパターン
-        drum_notes = [
-            (0.0, "drums", 36, 0.1),  # キック
-            (0.5, "drums", 38, 0.1),  # スネア
-            (1.0, "drums", 36, 0.1),  # キック
-            (1.5, "drums", 38, 0.1),  # スネア
-        ]
-
-        # ノートを追加
-        for time, instrument, note, duration in piano_notes + drum_notes:
-            if isinstance(note, str):
-                midi_number = note_name_to_number(note)
-            else:
-                midi_number = note
-
-            sequencer.add_note(time, instrument, midi_number, duration)
+        drum_track.add_note(36, 120, 0.0, 0.1)   # キック
+        drum_track.add_note(38, 100, 0.5, 0.1)   # スネア
+        drum_track.add_note(36, 120, 1.0, 0.1)   # キック
+        drum_track.add_note(38, 100, 1.5, 0.1)   # スネア
 
         print("✅ ノートの追加成功")
 
