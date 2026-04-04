@@ -7,6 +7,7 @@
 | ADR | タイトル | ステータス |
 |-----|---------|-----------|
 | [0001](0001-introduce-audio-signal.md) | AudioSignalクラスの導入とAudioConfig廃止 | 採用済み |
+| [0002](0002-livesession-sonic-pi-style-api.md) | Sonic Pi風の逐次記述API（LiveSession） | 提案 |
 
 ## ADRの書き方
 
