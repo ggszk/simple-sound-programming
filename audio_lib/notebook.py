@@ -10,6 +10,34 @@ import numpy as np
 from .core.audio_signal import AudioSignal
 
 
+def setup_environment():
+    """ノートブック環境の共通セットアップ
+
+    - Colab/ローカル環境を検出して日本語フォントを設定
+    - matplotlib の警告を抑制
+    """
+    import warnings
+
+    warnings.filterwarnings("ignore")
+
+    try:
+        import google.colab  # noqa: F401
+
+        import japanize_matplotlib  # noqa: F401
+
+        print("✅ Google Colab環境セットアップ完了")
+    except ImportError:
+        import platform
+
+        import matplotlib.pyplot as plt
+
+        if platform.system() == "Darwin":
+            plt.rcParams["font.family"] = "Hiragino Sans"
+        else:
+            plt.rcParams["font.family"] = "Meiryo"
+        print("✅ ローカル環境セットアップ完了")
+
+
 def apply_effect(signal: AudioSignal, effect) -> AudioSignal:
     """pedalboard のエフェクトを AudioSignal に適用するヘルパー
 
