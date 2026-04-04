@@ -20,7 +20,7 @@ from examples.debug_instruments import debug_piano, debug_guitar, debug_drum, de
 
 def run_all_tests():  # noqa: C901
     """全てのデバッグテストを実行"""
-    print("🔧 Simple Audio Programming ライブラリ全体デバッグ")
+    print("🔧 Simple Sound Programming ライブラリ全体デバッグ")
     print("=" * 60)
 
     test_results = {}

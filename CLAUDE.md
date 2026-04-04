@@ -2,7 +2,7 @@
 
 ## Project overview
 
-音響プログラミング学習用の教育的Pythonライブラリ。Google Colabのノートブック（`colab_lessons/`）を通じて音響合成を学ぶ教材。
+サウンドプログラミング学習用の教育的Pythonライブラリ。Google Colabのノートブック（`colab_lessons/`）を通じて音響合成を学ぶ教材。
 
 ## Commands
 

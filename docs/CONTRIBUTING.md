@@ -1,17 +1,17 @@
-# Simple Audio Programming への貢献
+# Simple Sound Programming への貢献
 
 このプロジェクトへの貢献をご検討いただき、ありがとうございます！
 
 ## プロジェクトの目標
 
-**音響プログラミング初心者の教育**を目的としたライブラリです。
+**サウンドプログラミング初心者の教育**を目的としたライブラリです。
 高度な最適化よりも理解しやすさを重視しています。
 
 ## 貢献の方法
 
 ### Issue の報告
 
-バグ報告や機能要求は [Issues](https://github.com/ggszk/simple-audio-programming/issues) でお願いします。
+バグ報告や機能要求は [Issues](https://github.com/ggszk/simple-sound-programming/issues) でお願いします。
 
 ### プルリクエスト
 

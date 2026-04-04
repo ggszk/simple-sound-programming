@@ -8,7 +8,7 @@
 各ノートブックは以下のURLで直接Colabで開けます：
 
 ```
-https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
+https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
 ```
 
 **URL構造:**
@@ -20,37 +20,37 @@ https://colab.research.google.com/github/{username}/{repo}/blob/{branch}/{path}
 
 1. **Lesson 01 - 基本概念とサイン波**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
    ```
 
 2. **Lesson 02 - エンベロープとADSR**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb
    ```
 
 3. **Lesson 03 - 周波数分析（FFTとスペクトログラム）**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb
    ```
 
 4. **Lesson 04 - フィルターと音色デザイン**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb
    ```
 
 5. **Lesson 05 - オーディオエフェクトとダイナミクス**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb
    ```
 
 6. **Lesson 06 - MIDIとシーケンサー**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb
    ```
 
 7. **Lesson 07 - 最終プロジェクト（既存曲の再現）**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb
+   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb
    ```
 
 ## 🎯 4年生アシスタント用 - チェック手順
@@ -100,9 +100,9 @@ https://colab.research.google.com/github/{username}/{repo}/blob/{branch}/{path}
    !pip install numpy scipy matplotlib
    
    # GitHubからライブラリをクローン
-   !git clone https://github.com/ggszk/simple-audio-programming.git
+   !git clone https://github.com/ggszk/simple-sound-programming.git
    import sys
-   sys.path.append('/content/simple-audio-programming')
+   sys.path.append('/content/simple-sound-programming')
    ```
 
 4. **セルを順番に実行**

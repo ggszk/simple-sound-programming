@@ -73,8 +73,8 @@ except ImportError:
 if IN_COLAB:
     print("Google Colab環境を設定中...")
     !pip install japanize-matplotlib pedalboard
-    !git clone https://github.com/ggszk/simple-audio-programming.git
-    sys.path.append('/content/simple-audio-programming')
+    !git clone https://github.com/ggszk/simple-sound-programming.git
+    sys.path.append('/content/simple-sound-programming')
     import japanize_matplotlib
 else:
     print("ローカル環境を設定中...")

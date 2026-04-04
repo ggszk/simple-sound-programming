@@ -6,10 +6,10 @@ build-backend = "hatchling.build"
 packages = ["audio_lib"]
 
 [project]
-name = "simple-audio-programming"
+name = "simple-sound-programming"
 version = "1.0.0"
-description = "音響プログラミング学習用の教育的Pythonライブラリ"
-authors = [{name = "Simple Audio Programming Team", email = "gen@ggszk.org"}]
+description = "サウンドプログラミング学習用の教育的Pythonライブラリ"
+authors = [{name = "Simple Sound Programming Team", email = "gen@ggszk.org"}]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -21,8 +21,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ggszk/simple-audio-programming"
-Repository = "https://github.com/ggszk/simple-audio-programming.git"
+Homepage = "https://github.com/ggszk/simple-sound-programming"
+Repository = "https://github.com/ggszk/simple-sound-programming.git"
 
 [dependency-groups]
 dev = [

@@ -1,14 +1,14 @@
-# Simple Audio Programming
+# Simple Sound Programming
 
-音響プログラミング初心者のための教育的Pythonライブラリです。
+サウンドプログラミング初心者のための教育的Pythonライブラリです。
 数式がそのままコードになる透明な設計で、デジタル信号処理と音響合成の基礎を学べます。
 
 ## セットアップ
 
 ```bash
 # Python 3.10以上が必要
-git clone https://github.com/ggszk/simple-audio-programming.git
-cd simple-audio-programming
+git clone https://github.com/ggszk/simple-sound-programming.git
+cd simple-sound-programming
 
 # uvがない場合: curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
@@ -65,13 +65,13 @@ result.save("my_song.wav")
 
 | レッスン | 内容 | Colab |
 |---------|------|-------|
-| Lesson 01 | 基礎とサイン波・サンプリング | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb) |
-| Lesson 02 | エンベロープとADSR | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb) |
-| Lesson 03 | 周波数分析（FFT） | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb) |
-| Lesson 04 | フィルターと音色デザイン | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb) |
-| Lesson 05 | オーディオエフェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb) |
-| Lesson 06 | MIDIとシーケンサー | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb) |
-| Lesson 07 | 最終プロジェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb) |
+| Lesson 01 | 基礎とサイン波・サンプリング | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb) |
+| Lesson 02 | エンベロープとADSR | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb) |
+| Lesson 03 | 周波数分析（FFT） | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb) |
+| Lesson 04 | フィルターと音色デザイン | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb) |
+| Lesson 05 | オーディオエフェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb) |
+| Lesson 06 | MIDIとシーケンサー | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb) |
+| Lesson 07 | 最終プロジェクト | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb) |
 
 ## API一覧
 
