@@ -18,7 +18,7 @@ https://colab.research.google.com/github/{username}/{repo}/blob/{branch}/{path}
 
 ### **各レッスンの直接アクセスURL:**
 
-1. **Lesson 01 - 基礎とサイン波**
+1. **Lesson 01 - 基本概念とサイン波**
    ```
    https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
    ```
@@ -28,27 +28,27 @@ https://colab.research.google.com/github/{username}/{repo}/blob/{branch}/{path}
    https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb
    ```
 
-3. **Lesson 03 - フィルターと音響設計**
+3. **Lesson 03 - 周波数分析（FFTとスペクトログラム）**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_filters_and_sound_design.ipynb
-   ```
-
-4. **Lesson 04 - オーディオエフェクトと動力学**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_audio_effects_and_dynamics.ipynb
+   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb
    ```
 
-5. **Lesson 05 - MIDI とシーケンサー**
+4. **Lesson 04 - フィルターと音色デザイン**
    ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_midi_and_sequencer.ipynb
-   ```
-
-6. **Lesson 06 - サンプリングと分析**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_sampling_and_analysis.ipynb
+   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb
    ```
 
-7. **Lesson 07 - 最終プロジェクトとパフォーマンス**
+5. **Lesson 05 - オーディオエフェクトとダイナミクス**
+   ```
+   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb
+   ```
+
+6. **Lesson 06 - MIDIとシーケンサー**
+   ```
+   https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb
+   ```
+
+7. **Lesson 07 - 最終プロジェクト（既存曲の再現）**
    ```
    https://colab.research.google.com/github/ggszk/simple-audio-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb
    ```
