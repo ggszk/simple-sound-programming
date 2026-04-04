@@ -182,9 +182,13 @@ class Delay:
 
         for n, x_n in enumerate(input_data):
             delayed_sample = self.delay_buffer[self.delay_index]
+            # フィードバックは遅延信号のみに適用（入力を加算しない）
             self.delay_buffer[self.delay_index] = x_n + self.feedback * delayed_sample
             output[n] = self.dry_level * x_n + self.wet_level * delayed_sample
             self.delay_index = (self.delay_index + 1) % len(self.delay_buffer)
+
+        # クリッピング防止
+        output = np.clip(output, -1.0, 1.0)
 
         return AudioSignal(output, signal.sample_rate)
 
@@ -236,8 +240,12 @@ class Chorus:
             delay_time = self.depth * (1 + lfo)
             delay_samples = delay_time * self.sample_rate
 
-            delay_index = (self.buffer_index - int(delay_samples)) % len(self.delay_buffer)
-            delayed_sample = self.delay_buffer[delay_index]
+            # 線形補間で小数サンプル遅延を処理（エイリアシング防止）
+            delay_int = int(np.floor(delay_samples))
+            frac = delay_samples - delay_int
+            idx0 = (self.buffer_index - delay_int) % len(self.delay_buffer)
+            idx1 = (self.buffer_index - delay_int - 1) % len(self.delay_buffer)
+            delayed_sample = (1.0 - frac) * self.delay_buffer[idx0] + frac * self.delay_buffer[idx1]
 
             output[n] = self.dry_level * x_n + self.wet_level * delayed_sample
 
@@ -245,6 +253,9 @@ class Chorus:
             self.phase += self.rate / self.sample_rate
             if self.phase >= 1.0:
                 self.phase -= 1.0
+
+        # クリッピング防止
+        output = np.clip(output, -1.0, 1.0)
 
         return AudioSignal(output, signal.sample_rate)
 
@@ -296,7 +307,9 @@ class Compressor:
 
             if self.envelope > self.threshold:
                 excess = self.envelope - self.threshold
-                gain_reduction = 1.0 - (excess / self.ratio) / self.envelope
+                compressed_excess = excess / self.ratio
+                target_level = self.threshold + compressed_excess
+                gain_reduction = target_level / self.envelope
             else:
                 gain_reduction = 1.0
 
