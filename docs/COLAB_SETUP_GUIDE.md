@@ -1,166 +1,80 @@
-# Google Colab 連携ガイド
-# 基礎ゼミ用 - 4年生アシスタント & 1年生向け
+# Google Colab セットアップガイド
 
-## 🚀 GitHub → Colab 直接連携（推奨）
+## 各レッスンのアクセスURL
 
-### **方法1: 直接URLアクセス（最もシンプル）**
+各ノートブックは以下のURLで直接Google Colabで開けます。
 
-各ノートブックは以下のURLで直接Colabで開けます：
+| レッスン | URL |
+|---------|-----|
+| 01 - 基本概念とサイン波 | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb` |
+| 02 - エンベロープとADSR | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb` |
+| 03 - 周波数分析 | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb` |
+| 04 - フィルターと音色デザイン | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb` |
+| 05 - オーディオエフェクト | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb` |
+| 06 - MIDIとシーケンサー | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb` |
+| 07 - 最終プロジェクト | `https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb` |
 
+**URL構造:** `https://colab.research.google.com/github/{user}/{repo}/blob/{branch}/{path}`
+
+## 学生向け - 使用手順
+
+### 1. ノートブックを開く
+
+提供されたURLをクリックすると、Colabが自動で開きます。
+
+### 2. 自分用にコピー
+
+`ファイル` → `ドライブにコピーを保存` で自分のGoogleドライブに保存します。
+
+### 3. セットアップセルを実行
+
+各ノートブックの最初のコードセルがセットアップです。Colab環境を自動判定し、必要なライブラリのインストールとリポジトリのクローンを行います。
+
+```python
+# 各ノートブック共通のセットアップセル（自動実行）
+import sys
+try:
+    import google.colab
+    !pip install -q japanize-matplotlib
+    !git clone -q https://github.com/ggszk/simple-sound-programming.git
+    sys.path.append('/content/simple-sound-programming')
+except ImportError:
+    sys.path.append('..')
+
+from audio_lib.notebook import setup_environment
+setup_environment()
 ```
-https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
-```
 
-**URL構造:**
-```
-https://colab.research.google.com/github/{username}/{repo}/blob/{branch}/{path}
-```
+> **注意:** Lesson 05 では追加で `pedalboard` パッケージもインストールされます。
 
-### **各レッスンの直接アクセスURL:**
+### 4. セルを順番に実行
 
-1. **Lesson 01 - 基本概念とサイン波**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_01_basics_and_sine_waves.ipynb
-   ```
+`Shift + Enter` でセルを実行します。エラーが出たら前のセルから確認してください。
 
-2. **Lesson 02 - エンベロープとADSR**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_02_envelopes_and_adsr.ipynb
-   ```
+## アシスタント向け - チェック手順
 
-3. **Lesson 03 - 周波数分析（FFTとスペクトログラム）**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_03_frequency_analysis.ipynb
-   ```
+ノートブックの事前チェックには [ASSISTANT_CHECKLIST.md](ASSISTANT_CHECKLIST.md) を使用してください。
 
-4. **Lesson 04 - フィルターと音色デザイン**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_04_filters_and_sound_design.ipynb
-   ```
+基本的な流れ：
 
-5. **Lesson 05 - オーディオエフェクトとダイナミクス**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_05_audio_effects_and_dynamics.ipynb
-   ```
+1. 上記URLでノートブックを開く
+2. `ファイル` → `ドライブにコピーを保存` で自分のドライブにコピー
+3. チェックリストに沿って確認
+4. フィードバックをまとめて報告
 
-6. **Lesson 06 - MIDIとシーケンサー**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_06_midi_and_sequencer.ipynb
-   ```
+## 授業での運用
 
-7. **Lesson 07 - 最終プロジェクト（既存曲の再現）**
-   ```
-   https://colab.research.google.com/github/ggszk/simple-sound-programming/blob/main/colab_lessons/lesson_07_final_project_and_performance.ipynb
-   ```
+### 授業開始時
+1. QRコードまたはURLを提示
+2. 学生が各自でColabを開く
+3. 「ドライブにコピー」を確認
 
-## 🎯 4年生アシスタント用 - チェック手順
+### 授業中
+1. アシスタントが巡回サポート
+2. 共通エラーを前で解説
+3. 進度確認とペース調整
 
-### **Step 1: 事前チェック用コピー作成**
-
-1. **上記URLでノートブックを開く**
-2. **「ドライブにコピー」をクリック**
-3. **自分のGoogleドライブに保存**
-4. **チェック後、コメント・修正案をまとめる**
-
-### **Step 2: チェック項目**
-
-#### **技術的チェック**
-- [ ] セル実行がエラーなく完了するか
-- [ ] 音声出力が正常に再生されるか
-- [ ] インストール手順が正しく動作するか
-- [ ] 実行時間が適切か（1セルあたり3分以内）
-
-#### **難易度チェック（1年生基準）**
-- [ ] 説明が理解しやすいか
-- [ ] コード例が適切な複雑さか
-- [ ] 段階的な学習になっているか
-- [ ] 専門用語の説明が十分か
-
-#### **教育的チェック**
-- [ ] 学習目標が明確か
-- [ ] 実践的な演習があるか
-- [ ] 理論と実装の対応が分かりやすいか
-- [ ] 次のレッスンへの橋渡しが適切か
-
-## 🎓 1年生向け - 使用手順
-
-### **基本的な使い方**
-
-1. **ノートブックを開く**
-   - 提供されたURLをクリック
-   - Colabが自動で開きます
-
-2. **自分用にコピー**
-   - `ファイル` → `ドライブにコピーを保存`
-   - 自分のGoogleドライブに保存されます
-
-3. **実行前の準備**
-   ```python
-   # 最初のセルで必ずライブラリをインストール
-   !pip install numpy scipy matplotlib
-   
-   # GitHubからライブラリをクローン
-   !git clone https://github.com/ggszk/simple-sound-programming.git
-   import sys
-   sys.path.append('/content/simple-sound-programming')
-   ```
-
-4. **セルを順番に実行**
-   - `Shift + Enter` でセル実行
-   - エラーが出たら前のセルから確認
-
-## 📋 管理面でのメリット
-
-### **教員にとって**
-- ✅ 常に最新版を学生に提供
-- ✅ GitHub で版管理・更新が簡単
-- ✅ 学生の進捗確認が容易
-- ✅ アシスタントとの協力体制構築
-
-### **アシスタントにとって**
-- ✅ 簡単にアクセス・テスト可能
-- ✅ 自分のドライブでメモ・修正案作成
-- ✅ 元ファイルを汚さずチェック可能
-- ✅ Issue でフィードバック提供
-
-### **学生にとって**
-- ✅ 複雑なセットアップ不要
-- ✅ 常に動作する環境
-- ✅ 自分のペースで学習可能
-- ✅ 保存・共有が簡単
-
-## 🔧 追加設定（オプション）
-
-### **GitHub Pages でランディングページ作成**
-
-学生向けに見やすいページを作成：
-
-1. **Settings** → **Pages**
-2. **Source**: Deploy from a branch
-3. **Branch**: main
-4. **各レッスンへの直接Colabリンクを配置**
-
-### **QRコード生成**
-
-各レッスンのColabリンクのQRコードを生成して、授業中に簡単アクセス。
-
-## 📱 実際の授業での運用例
-
-### **授業開始時**
-1. **QRコードまたはURLを提示**
-2. **学生が各自でColab開く**
-3. **「ドライブにコピー」を確認**
-
-### **授業中**
-1. **アシスタントが巡回サポート**
-2. **共通エラーを前で解説**
-3. **進度確認とペース調整**
-
-### **授業後**
-1. **学生の作成ファイルを確認**
-2. **次回の準備案内**
-3. **アシスタントからのフィードバック収集**
-
----
-
-この方法なら、**ファイル管理が最小限**で**常に最新版を提供**でき、**アシスタントとの協力**も効率的です！
+### 授業後
+1. 学生の作成ファイルを確認
+2. 次回の準備案内
+3. アシスタントからのフィードバック収集
