@@ -10,7 +10,7 @@
 from .core.audio_signal import AudioSignal, save_audio, load_audio
 
 # 波形生成（関数）
-from .synthesis.oscillators import sine_wave, sawtooth_wave, square_wave, triangle_wave, white_noise, pink_noise
+from .synthesis.oscillators import sine_wave, sawtooth_wave, square_wave, triangle_wave, additive_synth, white_noise, pink_noise
 
 # エンベロープ（関数）
 from .synthesis.envelopes import adsr, linear_envelope, cosine_envelope

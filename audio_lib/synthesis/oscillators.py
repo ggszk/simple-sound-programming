@@ -104,6 +104,46 @@ def triangle_wave(frequency: float, duration: float, phase: float = 0.0, sample_
     return AudioSignal(data, sample_rate)
 
 
+def additive_synth(
+    frequency: float, harmonics: dict, duration: float = 2.0, sample_rate: int = 44100,
+) -> AudioSignal:
+    """加算合成で音を生成する
+
+    倍音のレシピ（辞書）を指定してサイン波を足し合わせ、音色を作る。
+    辞書のキーは基本周波数に対する倍率（整数でなくてもよい）、
+    値は各成分の振幅。出力は最大振幅 1.0 に正規化される。
+
+    Args:
+        frequency: 基本周波数 (Hz)
+        harmonics: 倍音のレシピ。{倍率: 振幅} の辞書
+                   例: {1: 1.0, 2: 0.5, 3: 0.3}
+        duration: 継続時間 (秒)
+        sample_rate: サンプリングレート (Hz)
+
+    Returns:
+        AudioSignal: 合成された音声信号（最大振幅 1.0 に正規化）
+
+    Examples:
+        >>> # ノコギリ波的な音色
+        >>> sig = additive_synth(440, {k: 1.0/k for k in range(1, 11)})
+
+        >>> # ベル風（非整数倍音）
+        >>> sig = additive_synth(440, {1: 1.0, 2.76: 0.4, 3.95: 0.25})
+    """
+    t = _create_time_array(duration, sample_rate)
+    data = np.zeros_like(t)
+
+    for ratio, amp in harmonics.items():
+        data += amp * np.sin(2 * np.pi * ratio * frequency * t)
+
+    # 正規化（ゼロ除算を防ぐ）
+    max_val = np.max(np.abs(data))
+    if max_val > 0:
+        data /= max_val
+
+    return AudioSignal(data, sample_rate)
+
+
 def white_noise(duration: float, amplitude: float = 1.0, sample_rate: int = 44100) -> AudioSignal:
     """ホワイトノイズを生成
 
