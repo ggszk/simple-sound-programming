@@ -59,19 +59,22 @@ class TestSquareWave:
     """矩形波のテスト"""
 
     def test_square_wave_generation(self):
-        """基本的な矩形波生成のテスト"""
+        """基本的な矩形波生成のテスト（帯域制限付き加算合成）"""
         signal = square_wave(frequency=440.0, duration=0.1)
-        unique_values = np.unique(np.round(signal.data, 1))
-        assert len(unique_values) <= 10
+        # 加算合成ではギブス現象でわずかにオーバーシュートするが、
+        # おおむね ±1 の範囲に収まる
+        assert signal.data.max() < 1.2
+        assert signal.data.min() > -1.2
 
     def test_duty_cycle(self):
-        """デューティサイクルのテスト"""
+        """デューティサイクルのテスト（帯域制限付き加算合成）"""
         duty = 0.25
-        signal = square_wave(frequency=100.0, duration=0.1, duty_cycle=duty)
+        signal = square_wave(frequency=100.0, duration=1.0, duty_cycle=duty)
 
-        positive_samples = np.sum(signal.data > 0)
-        actual_duty = positive_samples / signal.num_samples
-        assert abs(actual_duty - duty) < 0.1
+        # DC成分が 2d - 1 = -0.5 に近いことを確認
+        expected_dc = 2.0 * duty - 1.0
+        actual_dc = np.mean(signal.data)
+        assert abs(actual_dc - expected_dc) < 0.05
 
 
 class TestWaveformComparison:

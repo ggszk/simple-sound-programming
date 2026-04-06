@@ -64,7 +64,11 @@ def sawtooth_wave(frequency: float, duration: float, phase: float = 0.0, sample_
 def square_wave(
     frequency: float, duration: float, phase: float = 0.0, duty_cycle: float = 0.5, sample_rate: int = 44100,
 ) -> AudioSignal:
-    """矩形波を生成
+    """矩形波を生成（帯域制限付き加算合成）
+
+    ナイキスト周波数以下の倍音のみを加算合成することで、
+    エイリアシングのない矩形波を生成する。
+    duty_cycle=0.5 のとき奇数次倍音のみの標準的な矩形波になる。
 
     Args:
         frequency: 周波数 (Hz)
@@ -77,13 +81,29 @@ def square_wave(
         AudioSignal: 矩形波データ
     """
     t = _create_time_array(duration, sample_rate)
-    phase_signal = (frequency * t + phase) % 1.0
-    data = np.where(phase_signal < duty_cycle, 1.0, -1.0)
+    nyquist = sample_rate / 2.0
+    num_harmonics = int(nyquist / frequency)
+
+    # 一般デューティ比のフーリエ級数:
+    # x(t) = d - 0.5 + Σ (1/(kπ)) * sin(2πk*d) * cos(2πkft + kφ)
+    #                - Σ (1/(kπ)) * (1 - cos(2πk*d)) * sin(2πkft + kφ)
+    # ただし d = duty_cycle, k = 1, 2, 3, ...
+    d = duty_cycle
+    data = np.full_like(t, 2.0 * d - 1.0)  # DC成分: 2d - 1
+    phase_rad = 2 * np.pi * phase
+    for k in range(1, num_harmonics + 1):
+        coeff = 2.0 * np.sin(k * np.pi * d) / (k * np.pi)
+        if abs(coeff) > 1e-12:
+            data += coeff * np.cos(2 * np.pi * k * frequency * t + k * phase_rad - k * np.pi * d)
+
     return AudioSignal(data, sample_rate)
 
 
 def triangle_wave(frequency: float, duration: float, phase: float = 0.0, sample_rate: int = 44100) -> AudioSignal:
-    """三角波を生成
+    """三角波を生成（帯域制限付き加算合成）
+
+    ナイキスト周波数以下の奇数次倍音のみを加算合成することで、
+    エイリアシングのない三角波を生成する。
 
     Args:
         frequency: 周波数 (Hz)
@@ -95,12 +115,16 @@ def triangle_wave(frequency: float, duration: float, phase: float = 0.0, sample_
         AudioSignal: 三角波データ
     """
     t = _create_time_array(duration, sample_rate)
-    phase_signal = (frequency * t + phase) % 1.0
-    data = np.where(
-        phase_signal < 0.5,
-        4.0 * phase_signal - 1.0,   # 上昇部
-        3.0 - 4.0 * phase_signal,   # 下降部
-    )
+    nyquist = sample_rate / 2.0
+    num_harmonics = int(nyquist / frequency)
+
+    # フーリエ級数: triangle(t) = 8/π² * Σ (-1)^((k-1)/2) * sin(2πkft) / k²  (奇数次のみ)
+    data = np.zeros_like(t)
+    phase_rad = 2 * np.pi * phase
+    for k in range(1, num_harmonics + 1, 2):
+        sign = (-1.0) ** ((k - 1) // 2)
+        data += sign * np.sin(2 * np.pi * k * frequency * t + k * phase_rad) / (k * k)
+    data *= 8.0 / (np.pi * np.pi)
     return AudioSignal(data, sample_rate)
 
 
