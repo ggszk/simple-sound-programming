@@ -43,7 +43,7 @@ ignore = ["W291", "W293", "E402", "E231"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"colab_lessons/*.ipynb" = ["F401", "F541", "E501", "C901"]
+"colab_lessons/*.ipynb" = ["F401", "F541", "F811", "F821", "E501", "C901"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

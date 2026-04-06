@@ -146,7 +146,7 @@ def generate():
             obj = getattr(mod, name, None)
             if obj is None:
                 output.append(f"### `{name}`\n")
-                output.append(f"*未定義*\n")
+                output.append("*未定義*\n")
                 continue
 
             if inspect.isclass(obj):
@@ -155,7 +155,7 @@ def generate():
                 output.append(document_function(obj, name))
             else:
                 output.append(f"### `{name}`\n")
-                output.append(f"*ドキュメント化対象外*\n")
+                output.append("*ドキュメント化対象外*\n")
 
         output.append("---\n")
 
